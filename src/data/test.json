@@ -1,0 +1,46 @@
+[
+	{
+	  "list": {
+		"id": 1,
+		"name": "To Do",
+		"tasks": [
+		  {
+			"id": "task-1",
+			"name": "Write Unit Tests",
+			"description": "Unit tests for the TaskList component",
+			"date": "2024-03-25",
+			"priority": "High"
+		  },
+		  {
+			"id": "task-2",
+			"name": "Fix CSS styling issue",
+			"description": "Button hover effect not working properly",
+			"date": "2024-03-26",
+			"priority": "Medium"
+		  }
+		]
+	  }
+	},
+	{
+	  "list": {
+		"id": 2,
+		"name": "In Progress",
+		"tasks": [
+		  {
+			"id": "task-3",
+			"name": "Implement drag-and-drop functionality",
+			"description": "Allow users to reorder tasks within lists",
+			"date": "2024-03-27",
+			"priority": "High"
+		  },
+		  {
+			"id": "task-4",
+			"name": "Review code for potential improvements",
+			"description": "Look for ways to enhance code efficiency and readability",
+			"date": "2024-03-28",
+			"priority": "Low"
+		  }
+		]
+	  }
+	}
+  ]
