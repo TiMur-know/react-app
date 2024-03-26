@@ -1,19 +1,15 @@
-import { Box, IconButton, List, ListItem, ListItemText, SwipeableDrawer, Typography } from "@mui/material"
+import { Box, IconButton, List, ListItem, ListItemText, Typography } from "@mui/material"
 import React, { FC } from "react"
 
-import { grey, pink,  } from "@mui/material/colors";
+import { blue, grey, pink,  } from "@mui/material/colors";
 import { Close } from "@mui/icons-material";
-interface HistoryLogEntry {
-	message: string;
-	timestamp: Date;
-	primaryWords?: string[]; 
-	secondaryWords?: string[];
-}
-interface HistoryProps {
-	logs: HistoryLogEntry[]; 
+import { LogEntry } from "../../types/LogEntry";
 
+interface HistoryProps {
+	logs: LogEntry[]; 
+	onClose?: () => void;
 }
-const History: FC<HistoryProps> = ({ logs }) => {
+const History: FC<HistoryProps> = ({ logs,onClose }) => {
 	const formatTimestamp = (timestamp: Date) => {
 		const formatter = new Intl.DateTimeFormat('en-US', {
 			month: 'long',
@@ -23,7 +19,7 @@ const History: FC<HistoryProps> = ({ logs }) => {
 		});
 		return formatter.format(timestamp);
 	}
-	const formatMessage = (log: HistoryLogEntry) => {
+	const formatMessage = (log: LogEntry) => {
 		let message = log.message;
 
     if (log.primaryWords) {
@@ -34,15 +30,12 @@ const History: FC<HistoryProps> = ({ logs }) => {
 
     if (log.secondaryWords) {
       log.secondaryWords.forEach((word, index) => {
-        message = message.replace(`{secondary[${index}]}`, `<span style="color: #b38ff7; font-weight: 700;">${word}</span>`);
+        message = message.replace(`{secondary[${index}]}`, `<span style="color: #62c2fa; font-weight: 700;">${word}</span>`);
       });
     }
 
     return <span dangerouslySetInnerHTML={{ __html: message }} />;
 	};
-	const onClose=()=>{
-		
-	}
 	return (
 		<Box sx={{ width: '100%' }}>
 			<Box sx={{display:'flex', justifyContent:'space-between',color:"white", background:grey[600]}}>
@@ -53,11 +46,11 @@ const History: FC<HistoryProps> = ({ logs }) => {
 				{logs.map((log, index) => (
 					<ListItem key={index}>
 						<ListItemText
-							primary={<Typography variant="body2" sx={{color:pink[200]}}>
+							primary={<Typography variant="body2" sx={{color:blue[200]}}>
 							{formatMessage(log)}
 						</Typography>}
 							secondary={
-								<Typography variant="caption" sx={{color:pink[300],fontStyle:'italic'}}>
+								<Typography variant="caption" sx={{color:blue[300],fontStyle:'italic'}}>
 									{formatTimestamp(log.timestamp)}
 								</Typography>
 							}

@@ -9,7 +9,10 @@ export const taskSlice=createSlice({
 	name:'task',
 	initialState,
 	reducers:{
-		
+		addTask:(),
+		editTask:(),
+		deleteTask:(),
+
 	}
 })
 export const {}=taskSlice.actions
