@@ -21,6 +21,11 @@ import { updateTask } from "../../store/slices/taskSlice";
 import { RootState } from "../../store/store";
 import { selectTaskLists } from "../../store/slices/taskListSlice";
 
+import { LogEntry } from "../../types/LogEntry";
+import { addLog } from "../../store/slices/logSlice";
+import { useCreateLogMutation } from "../../store/apiSlices/logsApi";
+import { useUpdateTaskMutation } from "../../store/apiSlices/tasksApi";
+
 interface TaskItemEditProps {
   task: TaskEntry;
   onClose: () => void;
@@ -36,6 +41,9 @@ const TaskItemEdit: FC<TaskItemEditProps> = ({ task,  onClose }) => {
 	const listnames=useSelector((state:RootState)=>selectTaskLists(state))
 	const selectedListInitialValue = listnames.find(list => list.tasks?.includes(task))?.name || '';
 	const [selectedList, setSelectedList] = useState(selectedListInitialValue);
+
+  const [editTask] = useUpdateTaskMutation();
+  const [addLogS]  = useCreateLogMutation();
   useEffect(() => {
     setName(task.name);
     setDescription(task.description);
@@ -53,7 +61,10 @@ const TaskItemEdit: FC<TaskItemEditProps> = ({ task,  onClose }) => {
       priority,
       taskListName: selectedList, 
     };
-    dispatch(updateTask(updatedTask));
+    const logMessage:LogEntry = { message: `Task : ${name} changed`, timestamp: new Date(), primaryWords: [`${name}`] }
+
+    editTask(updatedTask).then(() => updateTask(updatedTask))
+    addLogS(logMessage).then(()=>addLog(logMessage));
     onClose(); 
   };
 

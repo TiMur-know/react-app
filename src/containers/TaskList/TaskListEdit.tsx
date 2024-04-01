@@ -15,6 +15,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { selectTaskLists, updateTaskList } from "../../store/slices/taskListSlice";
 import TransferList from "./../../components/TransferList/TransferList";
+import { useUpdateTaskListMutation } from "../../store/apiSlices/taskListsApi";
+import { LogEntry } from "../../types/LogEntry";
+import { useCreateLogMutation } from "../../store/apiSlices/logsApi";
+import { addLog } from "../../store/slices/logSlice";
 
 interface TaskListEditProps {
   taskList: TaskListEntry;
@@ -28,10 +32,16 @@ const TaskListEdit: FC<TaskListEditProps> = ({ taskList, onClose }) => {
   const [editedList, setEditedList] = useState<TaskListEntry>({ ...taskList });
   const [selectedTasks, setSelectedTasks] = useState<string[]>(taskList.tasks?.map(item => item.name) || []);
   const [unselectedTasks, setUnselectedTasks] = useState<string[]>(allLists.find(list => list.name === selectedListName)?.tasks?.map(task => task.name) || []);
+  
+  const [updateTaskListApi] = useUpdateTaskListMutation();
+  const [addLogS]  = useCreateLogMutation();
+
 
   const handleSave = () => {
     const updatedList: TaskListEntry = { ...editedList, name: selectedListName };
-    dispatch(updateTaskList(updatedList));
+    updateTaskListApi(updatedList).then(() => updateTaskList(updatedList))
+    const logMessage:LogEntry = { message: `Changed list name to: ${selectedListName}`, timestamp: new Date(), primaryWords: [`${selectedListName}`] }
+    addLogS(logMessage).then(()=>addLog(logMessage));
     onClose();
   };
 

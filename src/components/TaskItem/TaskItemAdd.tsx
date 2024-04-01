@@ -9,7 +9,7 @@ import {
   MenuItem,
   TextField
 } from "@mui/material";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { TaskEntry } from "../../types/TaskEntry";
 import { useSelector,useDispatch } from "react-redux";
 import { RootState } from "../../store";
@@ -18,6 +18,8 @@ import { addTaskToTaskList, selectTaskLists } from "../../store/slices/taskListS
 import { addTask } from "../../store/slices/taskSlice";
 import { LogEntry } from "../../types/LogEntry";
 import { addLog } from "../../store/slices/logSlice";
+import { useCreateTaskMutation } from "../../store/apiSlices/tasksApi";
+import { useCreateLogMutation } from "../../store/apiSlices/logsApi";
 
 interface TaskItemAddProps {
   onClose: () => void;
@@ -32,6 +34,9 @@ const TaskItemAdd: FC<TaskItemAddProps> = ({ onClose, selectList }) => {
   const [selectedList, setSelectedList] = useState(selectList || "");
   const allLists = useSelector((state: RootState) => selectTaskLists(state));
 	const dispatch = useDispatch();
+
+  const [addTaskApi, {isLoading, error} ] = useCreateTaskMutation();
+  const [addLogS]  = useCreateLogMutation();
 	console.log(date)
   const handleSave = () => {
     const newTask: TaskEntry = {
@@ -41,14 +46,18 @@ const TaskItemAdd: FC<TaskItemAddProps> = ({ onClose, selectList }) => {
       priority,
       taskListName: selectedList,
     };
-		const logEntry: LogEntry = {
-			timestamp: new Date(),
-			message: `Task "${newTask.name}" added.`,
-			primaryWords: [newTask.name],
-		};
+    
+    
+    const logMessage:LogEntry = { message: `Task : ${name} added`, timestamp: new Date(), primaryWords: [`${name}`] }
+    
+    addTaskApi(newTask).then(() => addTask(newTask))
+    addLogS(logMessage).then(()=>addLog(logMessage));
     onClose();
   };
+  useEffect(()=>{
+  console.error("Error creating task:", error)
 
+  },[error])
   return (
     <Dialog open={true} onClose={onClose}>
       <DialogTitle>Add Task</DialogTitle>

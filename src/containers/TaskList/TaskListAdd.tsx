@@ -4,6 +4,9 @@ import { useDispatch } from "react-redux";
 import { addTaskList } from "../../store/slices/taskListSlice";
 import { TaskListEntry } from "../../types/TaskListsEntry";
 import { addLog } from "../../store/slices/logSlice";
+import { useCreateTaskListMutation } from "../../store/apiSlices/taskListsApi";
+import { LogEntry } from "../../types/LogEntry";
+import { useCreateLogMutation } from "../../store/apiSlices/logsApi";
 
 
 interface TaskListViewAddProps {
@@ -11,18 +14,25 @@ interface TaskListViewAddProps {
 }
 
 const TaskListViewAdd: FC<TaskListViewAddProps> = ({ onClose }) => {
+  const [addList, {isLoading, error} ] = useCreateTaskListMutation();
+  const [addLogS]  = useCreateLogMutation();
   const [listName, setListName] = useState("");
   const dispatch = useDispatch();
 
-  const handleSave = async() => {
+  const handleSave = () => {
     const newList: TaskListEntry = {
       name: listName,
       tasks: []
     };
+    /*
     dispatch(addTaskList(newList));
-    dispatch(addLog({ message: `Added new task list: ${listName}`,timestamp:new Date(),primaryWords:[`${listName}`] }));
-    
+    dispatch(addLog({ message: `Added new task list: ${listName}`,timestamp:new Date(),primaryWords:[`${listName}`] }));*/
+
+    addList(newList).then(() => addTaskList(newList))
+    const logMessage:LogEntry = { message: `Added new task list: ${listName}`, timestamp: new Date(), primaryWords: [`${listName}`] }
+    addLogS(logMessage).then(()=>addLog(logMessage));
     onClose();
+
   };
 
   return (
@@ -40,7 +50,9 @@ const TaskListViewAdd: FC<TaskListViewAddProps> = ({ onClose }) => {
           onChange={(e) => setListName(e.target.value)}
           fullWidth
           required
+          error={error}
         />
+        {isLoading && <p>Adding list...</p>}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
