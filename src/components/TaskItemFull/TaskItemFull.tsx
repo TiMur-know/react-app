@@ -1,36 +1,42 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, Typography } from "@mui/material"
+import { Box, Button, Dialog, DialogContent, DialogTitle, Grid, IconButton, List, ListItem, ListItemIcon,ListItemText, Typography } from "@mui/material"
 import { TaskEntry } from "../../types/TaskEntry"
 import { LogEntry } from "../../types/LogEntry"
-import { FC } from "react"
+import { FC, useState } from "react"
 import { Adjust, CalendarToday, Close, Edit, LocalOffer } from "@mui/icons-material";
 import { blue } from "@mui/material/colors";
+import { useSelector } from "react-redux";
+import { selectLogs } from "../../store/slices/logSlice";
+import TaskItemEdit from "../TaskItem/TaskItemEdit";
 interface FullTaskItem {
 	open: boolean;
 	onClose: () => void;
 	task: TaskEntry;
-	logs: LogEntry[];
 }
-const TaskItemFull: FC<FullTaskItem> = ({ open, onClose, task, logs }) => {
+const TaskItemFull: FC<FullTaskItem> = ({ open, onClose, task }) => {
+	const [openEdit,setOpenEdit]=useState(false)
+	const logs = useSelector(selectLogs).filter(item => item.task_ids.includes(task.id))
 	const handleEdit = () => {
-
+		setOpenEdit(!openEdit)
 	}
 	const formatTimestamp = (timestamp: Date) => {
+		const dateObject = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
 		const formatter = new Intl.DateTimeFormat('en-US', {
-			month: 'long',
-			day: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric'
+				month: 'long',
+				day: 'numeric',
+				hour: 'numeric',
+				minute: 'numeric'
 		});
-		return formatter.format(timestamp);
-	}
-	const formatDate = (getDate: Date) => {
-		const formatter = new Intl.DateTimeFormat('en-US', {
-			weekday: 'short',
-			month: 'short',
-			day: 'numeric',
-		});
-		return formatter.format(getDate);
-	};
+		return formatter.format(dateObject);
+}
+	const formatDate = (getDate: Date | string) => {
+    const dateObject = typeof getDate === 'string' ? new Date(getDate) : getDate;
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+    });
+    return formatter.format(dateObject);
+};
 	const formatMessage = (log: LogEntry) => {
 		let message = log.message;
 
@@ -90,16 +96,14 @@ const TaskItemFull: FC<FullTaskItem> = ({ open, onClose, task, logs }) => {
 						<List dense={true}>
 							{logs.map((log) => (
 								<ListItem >
-									<ListItemText primary={log.message} secondary={formatTimestamp(log.timestamp)} />
+									<ListItemText primary={formatMessage(log)} secondary={formatTimestamp(log.timestamp)} />
 								</ListItem>
 							))}
 						</List>
 					</Grid>
 				</Grid>
 			</DialogContent>
-			<DialogActions>
-				{/* You can add custom actions here, if needed */}
-			</DialogActions>
+			{openEdit?(<TaskItemEdit task={task} onClose={()=>setOpenEdit(false)}/>):(<></>)}					
 		</Dialog>
 	)
 }

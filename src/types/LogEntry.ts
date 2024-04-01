@@ -1,7 +1,9 @@
 export interface LogEntry {
-	task_id:string
+	id?:string,
+
 	message: string;
 	timestamp: Date;
 	primaryWords?: string[]; 
 	secondaryWords?: string[];
+	task_ids?:string[]
 }

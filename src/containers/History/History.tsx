@@ -1,7 +1,7 @@
 import { Box, IconButton, List, ListItem, ListItemText, Typography } from "@mui/material"
 import React, { FC } from "react"
 
-import { blue, grey, pink,  } from "@mui/material/colors";
+import { blue, grey, } from "@mui/material/colors";
 import { Close } from "@mui/icons-material";
 import { LogEntry } from "../../types/LogEntry";
 
@@ -10,15 +10,16 @@ interface HistoryProps {
 	onClose?: () => void;
 }
 const History: FC<HistoryProps> = ({ logs,onClose }) => {
-	const formatTimestamp = (timestamp: Date) => {
-		const formatter = new Intl.DateTimeFormat('en-US', {
-			month: 'long',
-			day: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric'
-		});
-		return formatter.format(timestamp);
-	}
+	const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+    });
+    return formatter.format(date);
+}
 	const formatMessage = (log: LogEntry) => {
 		let message = log.message;
 

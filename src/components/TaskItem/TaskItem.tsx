@@ -6,23 +6,32 @@ import { TaskEntry } from "../../types/TaskEntry";
 import TaskItemFull from "../TaskItemFull/TaskItemFull";
 import { LogEntry } from "../../types/LogEntry";
 
+import { useSelector } from "react-redux";
+import { selectTaskLists } from "../../store/slices/taskListSlice";
+import { RootState } from "../../store/store";
+import TaskItemEdit from "./TaskItemEdit";
+
 interface TaskItem {
 	task: TaskEntry
 }
 
-
 const TaskItem: FC<TaskItem> = ({ task }) => {
+	const allLists = useSelector((state: RootState) => selectTaskLists(state));
+	const listnames= allLists.map(item=>item.name)
 	const [openFullTask, setShowFullTask] = useState(false)
+	const [openEdit, setOpenEdit] = useState(false)
+	console.log(task)
 	const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 	const [open, setOpen] = useState(false);
-	const formatDate = (getDate: Date) => {
-		const formatter = new Intl.DateTimeFormat('en-US', {
-			weekday: 'short',
-			month: 'short',
-			day: 'numeric',
-		});
-		return formatter.format(getDate);
-	};
+	const formatDate = (getDate: Date | string) => {
+    const dateObject = typeof getDate === 'string' ? new Date(getDate) : getDate;
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+    });
+    return formatter.format(dateObject);
+};
 	const showFullTask = () => {
 		//use modal and TaskItemFull
 		setShowFullTask(!openFullTask)
@@ -39,10 +48,13 @@ const TaskItem: FC<TaskItem> = ({ task }) => {
 		High: red[500],
 	}
 	const handleEdit = () => {
-
+		setOpenEdit(!openEdit)
 	}
 	const handleDelete = () => {
 
+	}
+	const changeList=(event)=>{
+		const newListId = event.target.value;
 	}
 	const logs: LogEntry[] = []
 	return (
@@ -50,7 +62,6 @@ const TaskItem: FC<TaskItem> = ({ task }) => {
 			<CardActionArea sx={{ position: 'relative' }} onClick={() => { showFullTask() }}>
 				<CardContent>
 					<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 1 }} >
-
 						<Typography variant={"h6"}>{task.name}</Typography>
 						<IconButton aria-label="More options" onClick={(event) => showSettings(event)} onMouseDown={event => event.stopPropagation()}><MoreVert /></IconButton>
 						<ClickAwayListener onClickAway={(event) => { showSettings(event) }}>
@@ -64,7 +75,6 @@ const TaskItem: FC<TaskItem> = ({ task }) => {
 					</Box>
 
 					<Typography variant={"body2"} paragraph>{task.description}</Typography>
-
 					<Typography variant={"body2"} paragraph><CalendarToday /> {formatDate(task.date)}</Typography>
 					<Chip label={task.priority} variant="outlined" size="small" icon={<Lens color="c" sx={{ color: priorityColor[task.priority] }} />} />
 					<Select
@@ -73,20 +83,21 @@ const TaskItem: FC<TaskItem> = ({ task }) => {
 							event.stopPropagation();
 							event.preventDefault();
 						}}
+						onChange={(event)=>changeList(event)}
 						labelId="move-to-list"
 						id="demo-simple-select"
 						sx={{ width: '100%', mt: 1 }}
 						size="small"
 						label="Move to"
-					// Replace  with actual list data and potentially a loading indicator
 					>
-						<MenuItem >List 1</MenuItem>
-						<MenuItem >List 1</MenuItem>
-						<MenuItem >List 1</MenuItem>
+						{listnames.map((item)=><MenuItem >{item}</MenuItem>
+						)}
 					</Select>
 				</CardContent>
 			</CardActionArea>
-			<TaskItemFull open={openFullTask} onClose={() => setShowFullTask(false)} task={task} logs={logs} />
+			<TaskItemFull open={openFullTask} onClose={() => setShowFullTask(false)} task={task} />
+			{openEdit?(<TaskItemEdit task={task} onClose={()=>setOpenEdit(false)}/>):(<></>)}
+			
 		</Card >
 
 	)

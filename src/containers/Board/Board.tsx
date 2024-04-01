@@ -1,18 +1,31 @@
-import { Box, Grid } from "@mui/material"
-import TaskList, { TaskListInterface } from "../TaskList/TaskList"
+import { Box, Grid, Typography } from "@mui/material"
 import { FC } from "react"
+import TaskList from "../TaskList/TaskList"
+import { useSelector } from "react-redux"
+import { RootState } from "../../store/store"
+
 interface BoardProps {
-	taskLists: TaskListInterface[]
+	
 }
-const Board: FC<BoardProps> = ({ taskLists }) => {
+const Board: FC<BoardProps> = () => {
+	const taskLists = useSelector((state: RootState) => state.taskLists.taskLists);
+	console.log(taskLists) 
+
 	return (
 		<Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
 			<Grid container spacing={2}>
-				{taskLists.map((taskList, index) => (
-					<Grid item key={index} xs={12} md={4} >
-						<TaskList list={taskList} />
-					</Grid>
-				))}
+			{taskLists ? (
+          taskLists.map((taskList, index) => (
+            <Grid item key={index} xs={12} md={4}>
+              <TaskList list={taskList} />
+            </Grid>
+          ))
+        ) : (
+					<Grid item xs={12}>
+            <Typography variant="body1">No lists yet</Typography>
+          </Grid>
+        )}
+				
 			</Grid>
 		</Box>
 		
