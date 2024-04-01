@@ -20,7 +20,7 @@ const TaskListViewAdd: FC<TaskListViewAddProps> = ({ onClose }) => {
       tasks: []
     };
     dispatch(addTaskList(newList));
-    dispatch(addLog({ message: `Added new task list: ${listName}`,timestamp:new Date() }));
+    dispatch(addLog({ message: `Added new task list: ${listName}`,timestamp:new Date(),primaryWords:[`${listName}`] }));
     
     onClose();
   };
