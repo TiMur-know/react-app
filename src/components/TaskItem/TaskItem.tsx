@@ -10,12 +10,17 @@ import { useSelector } from "react-redux";
 import { selectTaskLists } from "../../store/slices/taskListSlice";
 import { RootState } from "../../store/store";
 import TaskItemEdit from "./TaskItemEdit";
+import { useDeleteTaskMutation } from "../../store/apiSlices/tasksApi";
+import { useCreateLogMutation } from "../../store/apiSlices/logsApi";
+import { deleteTask } from "../../store/slices/taskSlice";
+import { addLog } from "../../store/slices/logSlice";
 
 interface TaskItem {
-	task: TaskEntry
+	task: TaskEntry,
+	selectList?: string;
 }
 
-const TaskItem: FC<TaskItem> = ({ task }) => {
+const TaskItem: FC<TaskItem> = ({ task,selectList }) => {
 	const allLists = useSelector((state: RootState) => selectTaskLists(state));
 	const listnames= allLists.map(item=>item.name)
 	const [openFullTask, setShowFullTask] = useState(false)
@@ -23,6 +28,10 @@ const TaskItem: FC<TaskItem> = ({ task }) => {
 	console.log(task)
 	const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 	const [open, setOpen] = useState(false);
+	const [deleteTaskApi] = useDeleteTaskMutation();
+  const [addLogS]  = useCreateLogMutation();
+	const [selectedList, setSelectedList] = useState(selectList || "");
+
 	const formatDate = (getDate: Date | string) => {
     const dateObject = typeof getDate === 'string' ? new Date(getDate) : getDate;
     const formatter = new Intl.DateTimeFormat('en-US', {
@@ -50,13 +59,11 @@ const TaskItem: FC<TaskItem> = ({ task }) => {
 	const handleEdit = () => {
 		setOpenEdit(!openEdit)
 	}
-	const handleDelete = () => {
-
-	}
-	const changeList=(event)=>{
-		const newListId = event.target.value;
-	}
-	const logs: LogEntry[] = []
+	const handleDelete = (task:TaskEntry) => {
+    deleteTaskApi(task.id).then(()=>deleteTask(task.id));
+    const logMessage:LogEntry = { message: `Delete task: ${task.name}`, timestamp: new Date(), primaryWords: [`${task.listName}`] }
+    addLogS(logMessage).then(()=>addLog(logMessage));
+  };
 	return (
 		<Card>
 			<CardActionArea sx={{ position: 'relative' }} onClick={() => { showFullTask() }}>
@@ -83,7 +90,8 @@ const TaskItem: FC<TaskItem> = ({ task }) => {
 							event.stopPropagation();
 							event.preventDefault();
 						}}
-						onChange={(event)=>changeList(event)}
+						value={selectedList}
+            onChange={(e) => setSelectedList(e.target.value)}
 						labelId="move-to-list"
 						id="demo-simple-select"
 						sx={{ width: '100%', mt: 1 }}

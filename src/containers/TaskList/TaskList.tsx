@@ -9,9 +9,13 @@ import TaskListEdit from "./TaskListEdit";
 import { MoreVert } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { selectTaskLists } from "../../store/slices/taskListSlice";
+import { deleteTaskList } from "../../store/slices/taskListSlice";
 
-import { selectTasks } from "../../store/slices/taskSlice";
+import { deleteTask, selectTasks } from "../../store/slices/taskSlice";
+import { addLog } from "../../store/slices/logSlice";
+import { LogEntry } from "../../types/LogEntry";
+import { useCreateLogMutation } from "../../store/apiSlices/logsApi";
+import { useDeleteTaskListMutation } from "../../store/apiSlices/taskListsApi";
 
 interface TaskListProps {
   list: TaskListEntry;
@@ -22,6 +26,9 @@ const TaskList: FC<TaskListProps> = ({ list }) => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+
+  const [deleteTaskListApi] = useDeleteTaskListMutation();
+  const [addLogS]  = useCreateLogMutation();
 
   const showSettings = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -38,12 +45,12 @@ const TaskList: FC<TaskListProps> = ({ list }) => {
     setOpen(false);
   };
 
-  const handleDeleteList = () => {
-    // Handle delete list functionality
+  const handleDeleteList = (list:TaskListEntry) => {
+    deleteTaskListApi(list.id).then(()=>deleteTaskList(list.id));
+    const logMessage:LogEntry = { message: `Delete task list: ${list.name}`, timestamp: new Date(), primaryWords: [`${list.name}`] }
+    addLogS(logMessage).then(()=>addLog(logMessage));
   };
 
-	console.log(useSelector((state: RootState) => selectTasks(state)))
-	console.log(useSelector((state: RootState) => selectTaskLists(state)))
   return (
     <Box sx={{ width: '100%', mb: 1 }}>
       <Stack spacing={2}>
@@ -66,7 +73,7 @@ const TaskList: FC<TaskListProps> = ({ list }) => {
         <Button variant={"outlined"} sx={{ width: '100%' }} onClick={handleAddTask}>Add new task</Button>
         {list.tasks && list.tasks.length > 0 ? (
           list.tasks.map((task: TaskEntry, index) => (
-            <TaskItem key={index} task={task}></TaskItem>
+            <TaskItem key={index} task={task} selectList={list.name}></TaskItem>
           ))
         ) : (
           <Box sx={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px' }}>

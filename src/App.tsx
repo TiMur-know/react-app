@@ -25,9 +25,6 @@ function App() {
 
   useEffect(() => {
     if (!isLoadingLogs && !isLoadingTasks && !isLoadingLists) {
-      console.log(logs)
-      console.log(tasks)
-      console.log(taskLists)
       dispatch(addAllLogs(logs));
       dispatch(addAllTasks(tasks));
       dispatch(addAllTaskLists(taskLists));

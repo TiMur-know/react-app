@@ -37,7 +37,6 @@ const TaskItemAdd: FC<TaskItemAddProps> = ({ onClose, selectList }) => {
 
   const [addTaskApi, {isLoading, error} ] = useCreateTaskMutation();
   const [addLogS]  = useCreateLogMutation();
-	console.log(date)
   const handleSave = () => {
     const newTask: TaskEntry = {
       name,
