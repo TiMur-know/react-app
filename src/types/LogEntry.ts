@@ -1,6 +1,5 @@
 export interface LogEntry {
-	id?:number,
-
+	id:number,
 	message: string;
 	timestamp: Date;
 	primaryWords?: string[]; 

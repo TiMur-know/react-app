@@ -12,7 +12,7 @@ import { useGetTaskListsQuery } from './store/apiSlices/taskListsApi';
 import { addAllLogs } from './store/slices/logSlice';
 import { addAllTaskLists } from './store/slices/taskListSlice';
 import { addAllTasks } from './store/slices/taskSlice';
-import { fetchLogs } from './utils/logsUtils';
+
 
 
 function App() {

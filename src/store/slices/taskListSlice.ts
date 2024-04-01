@@ -50,10 +50,7 @@ export const taskListsSlice = createSlice({
       state.taskLists = state.taskLists.filter((list) => list.id !== action.payload);
     },
   },
-	extraReducers(builder) {
-			
-			
-	},
+
 });
 
 export const { addTaskList, updateTaskList, deleteTaskList, addTaskToTaskList, addAllTaskLists, addTaskToTaskListTask } = taskListsSlice.actions;

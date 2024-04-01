@@ -1,7 +1,7 @@
 import { TaskEntry } from "./TaskEntry";
 
 export interface TaskListEntry {
-	id?: number,
+	id: number,
 	name: string,
 	tasks?: TaskEntry[],
 }

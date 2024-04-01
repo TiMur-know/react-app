@@ -61,7 +61,7 @@ const TaskItem: FC<TaskItem> = ({ task,selectList }) => {
 	}
 	const handleDelete = (task:TaskEntry) => {
     deleteTaskApi(task.id).then(()=>deleteTask(task.id));
-    const logMessage:LogEntry = { message: `Delete task: ${task.name}`, timestamp: new Date(), primaryWords: [`${task.listName}`] }
+    const logMessage:LogEntry = { message: `Delete task: ${task.name}`, timestamp: new Date(), primaryWords: [`${task.taskListName}`] }
     addLogS(logMessage).then(()=>addLog(logMessage));
   };
 	return (

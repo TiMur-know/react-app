@@ -45,7 +45,7 @@ const TaskList: FC<TaskListProps> = ({ list }) => {
     setOpen(false);
   };
 
-  const handleDeleteList = (list:TaskListEntry) => {
+  const handleDeleteList = () => {
     deleteTaskListApi(list.id).then(()=>deleteTaskList(list.id));
     const logMessage:LogEntry = { message: `Delete task list: ${list.name}`, timestamp: new Date(), primaryWords: [`${list.name}`] }
     addLogS(logMessage).then(()=>addLog(logMessage));

@@ -1,5 +1,5 @@
 export interface TaskEntry {
-	id?: number
+	id: number
 	name: string,
 	description: string,
 	date: Date,
