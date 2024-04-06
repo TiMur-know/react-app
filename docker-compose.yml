@@ -1,7 +1,5 @@
 version: '3'
 services:
-  postgress:
-  
   backend:
     build:
       dockerfile: ./server-for-react-app/Dockerfile
